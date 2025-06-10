@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+html{
+    /* font-size: 120%; */
+}
+button{
+    cursor: pointer;
+}
