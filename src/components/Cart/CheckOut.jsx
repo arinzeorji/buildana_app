@@ -48,12 +48,12 @@ const CheckOut = () => {
     }
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto py-10 px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto py-5 px-6">
             {/* left side of checkout page */}
             <div className="bg-white rounded-lg p-6">
-            <h2 className="text-2xl uppercase mb-6">Checkout</h2>
+            <h2 className="text-2xl uppercase mb-6">Checkout Details</h2>
             <form onSubmit={handleCheckOutRequest}>
-                <h3 className="text-lg mb-4">Contact Details</h3>
+                <h3 className="text-lg mb-4">Delivery Details</h3>
                 <div className="mb-4">
                     <label htmlFor="email" className="block text-grey-700">Email</label>
                     <input 
@@ -62,7 +62,7 @@ const CheckOut = () => {
                         name="email" 
                         className="w-full p-2 border border-gray-400 rounded"/>
                 </div>
-                <h3 className="text-lg mb-4">Delivery Details</h3>
+                {/* <h3 className="text-lg mb-4">Delivery Details</h3> */}
                 <div className="mb-4 grid grid-cols-2 gap-4">
                 <div>
                         <label htmlFor="firstname" className="block text-gray-700">Firstname</label>
@@ -167,12 +167,70 @@ const CheckOut = () => {
                                         onError={(err) => alert("Payment Failed. Please Try Again")}
                                     />
                                 </div>
-                            )
-
-                            
+                            )                            
                         }
                 </div>
             </form>
+            </div>
+
+            {/* right section of the checkout with order information */}
+            <div className="bg-gray-50 py-10 px-6 rounded-lg">
+                <h3 className="text-lg mb-4">Order Summary</h3>
+                <div className="border-t py-4 mb-4">
+                        {
+                            cart.products.map((product, index) =>(
+                                <div 
+                                    key={index} 
+                                    className="flex items-center justify-between py-2 border-b">
+                                    <div className="flex items-start">
+                                        <img 
+                                            src={product.image} 
+                                            alt={product.name} 
+                                            className="w-20 h-24 object-cover mr-4"/>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-md">{product.name}</h3>
+                                        <p className="text-gray-500">Size: {product.size}</p>
+                                        <p className="text-gray-500">Color: {product.color}</p>
+                                    </div>
+                                    <p className="text-xl">{product.price.toLocaleString()}</p>
+                                </div>
+                            ))
+                        }
+                </div>
+
+                <div className="flex justify-between items-center text-lg mb-4">
+                    <p>Subtotal</p>
+                    <p>${cart.totalPrice.toLocaleString()}</p>
+                </div>
+                <div className="flex justify-between items-center text-lg">
+                    <p>Shipping</p>
+                    <p>Free</p>
+                </div>
+                <div className="flex justify-between pt-4 items-center text-lg mt-4 border-t">
+                    <p>TOTAL</p>
+                    <p>${cart.totalPrice.toLocaleString()}</p>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
             </div>
         </div>
     )

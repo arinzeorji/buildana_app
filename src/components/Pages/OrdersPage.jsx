@@ -3,8 +3,15 @@ import order1 from '../../assets/7.jpg';
 import order2 from '../../assets/8.jpg';
 import order3 from '../../assets/9.jpg';
 import order4 from '../../assets/11.jpg';
+import {useNavigate} from 'react-router-dom';
 
 const OrdersPage = () => {
+
+    const navigate = useNavigate();
+
+    const handleRowClick = (id) => {
+        navigate(`/order/${id}`)
+    }
 
     const [orders, setOrders] = useState([]);
 
@@ -80,7 +87,9 @@ const OrdersPage = () => {
                         {
                             orders.length > 0 ? (
                                 orders.map((order) => (
-                                    <tr key={order._id}
+                                    <tr 
+                                        onClick={() => handleRowClick(order._id)}
+                                        key={order._id}
                                         className="border-b border-t hover:bg-gray-100 cursor-pointer"
                                     >
                                         <td className="py-2 px-2 sm:py-4 sm:px-4">

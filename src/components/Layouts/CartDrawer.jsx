@@ -7,7 +7,8 @@ const CartDrawer = ({cartDrawerOpen, togglerCartDrawer}) => {
     
     const navigate = useNavigate();
     const handleCheckout = () =>{
-        navigate('/checkout')
+        togglerCartDrawer();
+        navigate('/checkout');
     }
 
     return (

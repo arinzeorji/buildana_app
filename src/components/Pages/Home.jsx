@@ -69,13 +69,9 @@ const Home = () => {
             <Hero />
             <BrandCollections />
             <NewArrivals />
-
-            {/* best sellers section header */}
             
-            
-            
-                <h2 className="text-3xl md:text-4xl text-center font-bold mb-4">You May Also Like</h2>
-           
+            <h2 className="text-3xl md:text-4xl text-center font-bold mb-4">You May Also Like</h2>
+    
             <ProductDetails />
 
             <div className="container mx-auto">
