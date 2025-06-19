@@ -1,8 +1,9 @@
-import React, {useState} from 'react'
-import { FaUser, FaBoxOpen, FaClipboardList, FaEdit, FaRegTrashAlt, FaMoneyCheck } from 'react-icons/fa';
-import { Link } from 'react-router';
+import React, { useState } from 'react'
+import PageTitle from './Common/PageTitle';
+import { FaRegTrashAlt, FaEdit } from 'react-icons/fa';
 
-const AdminHome = () => {
+const OrderManagement = () => {
+
     const [status, setStatus] = useState(false)
     const orders = [
         {
@@ -31,63 +32,10 @@ const AdminHome = () => {
 
     return (
         <div className="max-w-7xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <PageTitle text={" Order Management "}/>
 
-                {/* produxts card */}
-                <Link to="/admin/products"
-                >
-                <div className="p-6 shadow-lg rounded-lg flex items-center gap-4">
-                    <FaBoxOpen className="w-20 h-20 text-center text-green-700"/>
-                    <div>
-                        <h2 className="text-xl font-semibold mb-2">Products</h2>
-                        <p className="text-xl">540</p>
-                    </div>
-                </div>
-                </Link>
-
-                {/* Artisans */}
-                <Link to="/admin/artisans"
-                >
-                    <div className="p-6 shadow-lg rounded-lg flex items-center gap-4">
-                        <FaMoneyCheck className="w-20 h-20 text-center text-gray-700"/>
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">Artisans</h2>
-                            <p className="text-xl">231</p>
-                        </div>
-                    </div>
-                </Link>
-
-                {/* Orders */}
-                <Link to="/admin/orders"
-                >
-                <div className="p-6 shadow-lg rounded-lg flex items-center gap-4">
-                    <FaClipboardList className="w-20 h-20 text-center text-yellow-700"/>
-                    <div>
-                        <h2 className="text-xl font-semibold mb-2">Total Orders</h2>
-                        <p className="text-xl">200</p>
-                    </div>
-                </div>
-                </Link>
-                
-                {/* Users */}
-                <Link to="/admin/users"
-                >
-                <div className="p-6 shadow-lg rounded-lg flex items-center gap-4">
-                    <FaUser className="w-20 h-20 text-center text-red-700"/>
-                    <div>
-                        <h2 className="text-xl font-semibold mb-2">Users</h2>
-                        <p className="text-xl">21</p>
-                        <Link to="/admin/order" className="text-blue-500 hover:underline">Manage Users</Link>
-                    </div>
-                </div>
-                </Link>
-                </div>
-                <div className="mt-6">
-                    <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
-                    <div className="overflow-x-auto">
-                        
-                    <table className="min-w-full text-left text-gray-500">
+            <div className="overflow-x-auto shadow-md sm:rounded-lg">
+                <table className="min-w-full text-left text-gray-500">
                     <thead className="bg-gray-100 text-xs uppercase text-gray-700">
                         <tr>
                             <th className="py-3 px-4">Order ID</th>
@@ -138,11 +86,9 @@ const AdminHome = () => {
                         )}
                     </tbody>
                 </table>
-
-                    </div>
-                </div>
             </div>
+        </div> 
     )
 }
 
-export default AdminHome
+export default OrderManagement

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import image1 from '../../assets/10.jpg';
-import image2 from '../../assets/10.jpg';
+import image2 from '../../assets/5.jpg';
 import PageTitle from './Common/PageTitle';
 
 const EditProduct = () => {
@@ -22,9 +22,11 @@ const EditProduct = () => {
         images: [
             {
                url: image1,
+               altText: "Product image"
             }, 
             {
              url: image2,
+             altText: "Product image"
             }
     ],
 
@@ -37,11 +39,22 @@ const EditProduct = () => {
             [name]: value
         })
     }
+
+    const handleImageUpload = async (e) =>{
+        const file = e.target.files[0];
+        console.log(file)
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(productData)
+
+    }
     return (
         <div className="min-w-4xl mx-auto p-6 shadow-md rounded-md">
             <PageTitle text={"Edit Product"} />
 
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label className="block font-semibold mb-2">
                     Product Name
@@ -124,7 +137,7 @@ const EditProduct = () => {
                  {/* product Sizes */}
                  <div className="mb-6">
                     <label className="block font-semibold mb-2">
-                        Product Sizes [...Separate With Comma]
+                        Product Sizes [Separate With Comma]
                     </label>
                     <input 
                         type="text"
@@ -146,7 +159,7 @@ const EditProduct = () => {
                 {/* product colors */}
                 <div className="mb-6">
                     <label className="block font-semibold mb-2">
-                        Product Colors [...Separate With Comma]
+                        Product Colors [Separate With Comma]
                     </label>
                     <input 
                         type="text"
@@ -164,24 +177,26 @@ const EditProduct = () => {
                         }
                     />
                 </div>
+                    
+                    {/* image upload */}
+                    <div className="mb-4">
+                        <label htmlFor="image" className="block font-semibold mb-2">Upload Image</label>
+                        
+                        <input type="file"  onChange={handleImageUpload} />
+                        <div className="flex gap-4 mt-4">
+                            {productData.images.map((image, index) => (
+                                <div key={index}>
+                                    <img src={image.url} alt={image.altText || "Product Image"}
+                                        className="w-30 h-30 object-cover rounded shadow-md"
+                                    />
+                                 </div>
+                            ))}
+                        </div>
+                    </div>
 
-                 {/* product colors */}
-                 <div className="mb-6">
-                    <label className="block font-semibold mb-2">
-                        Available Stock
-                    </label>
-                    <input 
-                        type="number"
-                        name="countInStock"
-                        className="w-full border border-gray-300 rounded-md p-2"
-                        required
-                        value={productData.countInStock}
-                        onChange={handleChange}
-
-                    />
-                </div>
-
-
+                    <button type="submit" className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-colors">
+                            Update Product
+                    </button>
 
 
 

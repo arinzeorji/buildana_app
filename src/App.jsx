@@ -18,6 +18,7 @@ import UserManagement from './components/admin/UserManagement';
 import UsersList from './components/admin/UsersList';
 import ProductManagement from './components/admin/ProductManagement';
 import EditProduct from './components/admin/EditProduct';
+import OrderManagement from './components/admin/OrderManagement';
 
 const App = () => {
   return (
@@ -44,6 +45,7 @@ const App = () => {
             <Route path="edituser/:id" element={<UserManagement />} />
             <Route path="products" element={<ProductManagement />} />
             <Route path="products/:id" element={<EditProduct />} />
+            <Route path="orders" element={<OrderManagement />} />
         </Route>
 
       </Routes>
