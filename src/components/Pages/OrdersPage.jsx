@@ -1,72 +1,30 @@
-import React, { useState, useEffect } from 'react'
-import order1 from '../../assets/7.jpg';
-import order2 from '../../assets/8.jpg';
-import order3 from '../../assets/9.jpg';
-import order4 from '../../assets/11.jpg';
+import React, { useEffect } from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useDispatch, useSelector} from "react-redux";
+import {fetchUserOrders} from "../../redux/slice/orderSlice";
+
 
 const OrdersPage = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const {orders, loading, error} = useSelector((state) => state.orders);
+
+    useEffect(()=>{
+        dispatch(fetchUserOrders())
+    },[dispatch])
 
     const handleRowClick = (id) => {
         navigate(`/order/${id}`)
     }
 
-    const [orders, setOrders] = useState([]);
+    if(loading){
+        return <p>Loading</p>
+    }
 
-    useEffect(() =>{
-        //fetch orders
-        setTimeout(() =>{
-
-            const mockOrder = [
-                {
-                    _id: '12345',
-                    createdAt: new Date(),
-                    address: {city: "Zuba", lga: "Gwagwalada"},
-                    isPaid:true,
-                    totalPrice: 2900999,
-                    orderItems: [
-                        {
-                            name: "Product 1",
-                            image: order1
-                        }
-                    ]
-                },
-                {
-                    _id: '002233',
-                    createdAt: new Date(),
-                    address: {city: "Maitama", lga: "Central Area"},
-                    isPaid:true,
-                    totalPrice: 56600,
-                    orderItems: [
-                        {
-                            name: "Product 2",
-                            image: order2
-                        }
-                    ]
-                },
-                {
-                    _id: '6789',
-                    createdAt: new Date(),
-                    address: {city: "Dei Dei", lga: "Abuja Municipal"},
-                    isPaid:false,
-                    totalPrice: 99000,
-                    orderItems: [
-                        {
-                            name: "Product 3",
-                            image: order3
-                        },
-                        {
-                            name: "Product 4",
-                            image: order4
-                        }
-                    ]
-                }
-            ]
-            setOrders(mockOrder)
-        }, 1000)
-    }, [])
+    if(error){
+        return <p>{error}</p>
+    }
     return (
         <div className="max-w-7xl mx-auto p-4 sm:p-6">
             <h2 className="text-xl sm:text-2xl font-bold mb-6">My Order</h2>
@@ -85,7 +43,7 @@ const OrdersPage = () => {
                     </thead>
                     <tbody>
                         {
-                            orders.length > 0 ? (
+                            orders ? (
                                 orders.map((order) => (
                                     <tr 
                                         onClick={() => handleRowClick(order._id)}

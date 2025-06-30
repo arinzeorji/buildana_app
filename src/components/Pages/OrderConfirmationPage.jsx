@@ -1,40 +1,21 @@
-import React from 'react';
-import image1 from '../../assets/7.jpg';
-import image2 from '../../assets/12.jpg';
-
-
-const checkout = {
-    _id: "12345",
-    createdAt: new Date(),
-    checkoutItems:[{
-        productId: "1",
-        name:"Produxt 1",
-        color:"Black",
-        size:"XL",
-        quantity:1,
-        price: 12000,
-        image: image1
-    },
-    {
-        productId: "2",
-        name:"Produxt 2",
-        color:"Red",
-        size:"M",
-        quantity:3,
-        price: 400000,
-        image: image2
-    }],
-    
-shippingAddress:{
-    address:"Plot 2 binomu creasent",
-    city: "Abuja",
-    postalCode: "2333003",
-    country: "Somalia"
-    }
-}
+import React, { useEffect } from 'react';
 
 const OrderComfirmationPage = () => {
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const {checkout} = useSelector((state) => state.checkout)
+
+    //CLEAR CART AFTER CONFIRMATION OF ORDER
+    useEffect(()=>{
+        if (checkout && checkout._id){
+        dispatch(clearCart());
+        localStorage.removeItem("cart")
+        }else{
+            navigate("/my-order")
+        }
+    },[checkout, dispatch, navigate])
+    
     // delivery date function
     const estimatedDeliveryDate = (createdAt) =>{
         const orderDate = new Date(createdAt);

@@ -1,16 +1,20 @@
 import React, { useState } from 'react'
 import UsersList from './UsersList';
 import PageTitle from './Common/PageTitle';
+import { useNavigate } from 'react-router';
 
 const UserManagement = () => {
 
-    const users = [
-        {
-            name: "John Doe",
-            email: "johndoe@gmail.com",
-            role: "admin"
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const user = useSelector(state => state.auth);
+    const {users, loading, error} = useSelector((state)=> state.admin)
+
+    useEffect(() => {
+        if (user && user.role !== "admin") {
+            navigate("/");
         }
-    ]
+    }, [user, navigate])
 
     const [formData, setFormData] = useState({
         name: "",
@@ -19,18 +23,20 @@ const UserManagement = () => {
         role: "customer"
     })
 
-    const handleChange = (e) => {
-        
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        })
+    const handleDelete = (userId) =>{
+       if(window.confirm("Are you sure to delete this user? ")){
+            dispatch(deleteUser(userId));
+        }
+    }
+
+    const handleChange = (userId, newRole) => {
+        dispatch(updateUser({id: userId, role: newRole}))
     }
 
     const handleUserRegistration = (e) =>{
         e.preventDefault();
+        dispatch(addUser(formData));
 
-        console.log(formData);
         // reset form field after submission
         setFormData({
             name: "",

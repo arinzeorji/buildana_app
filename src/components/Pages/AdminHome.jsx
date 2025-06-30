@@ -3,35 +3,27 @@ import { FaUser, FaBoxOpen, FaClipboardList, FaEdit, FaRegTrashAlt, FaMoneyCheck
 import { Link } from 'react-router';
 
 const AdminHome = () => {
-    const [status, setStatus] = useState(false)
-    const orders = [
-        {
-            _id:12334,
-            user:{
-                name:"Harry Pat"
-            },
-            price: 20000,
-            status: status
-        }
-    ]
 
-    const handleStatusChange = (id) => {
-        console.log(id);
-
-        if(!status){
-            setStatus(true);
-        }
-    }
-
-    const handleDelete = (id) =>{
-        if(window.confirm("Are you sure to delete this order? ")){
-            console.log(id);
-        }
-    }
+    const dispatch = useDispatch();
+    const {products, loading: productsLoading, error: productsError} = useSelector((state)=>{state.adminProducts})
+    const {orders, totalOrders, totalSales, loading: ordersLoading, error: ordersError} = useSelector((state)=>{state.adminOrders})
+    
+    useEffect(()=>{
+        dispatch(fetchAllAdminProducts());
+        dispatch(fetchAllOrders());
+    },[dispatch])
 
     return (
         <div className="max-w-7xl mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+            
+            {
+                productsLoading || ordersLoading
+                ? (<p>Loading Please wait</p>) : productsError
+                ? (<p className="text-red-500">Error Fetching Products {productsError}</p>) : ordersError
+                ? (<p className="text-red-500">Error Fetching Orders {ordersError}</p>) 
+                : (
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
                 {/* produxts card */}
@@ -41,7 +33,7 @@ const AdminHome = () => {
                     <FaBoxOpen className="w-20 h-20 text-center text-green-700"/>
                     <div>
                         <h2 className="text-xl font-semibold mb-2">Products</h2>
-                        <p className="text-xl">540</p>
+                        <p className="text-xl">{products.length}</p>
                     </div>
                 </div>
                 </Link>
@@ -52,8 +44,8 @@ const AdminHome = () => {
                     <div className="p-6 shadow-lg rounded-lg flex items-center gap-4">
                         <FaMoneyCheck className="w-20 h-20 text-center text-gray-700"/>
                         <div>
-                            <h2 className="text-xl font-semibold mb-2">Artisans</h2>
-                            <p className="text-xl">231</p>
+                            <h2 className="text-xl font-semibold mb-2">Total Sales</h2>
+                            <p className="text-xl">#{totalSales.toFixed(2)}</p>
                         </div>
                     </div>
                 </Link>
@@ -65,7 +57,7 @@ const AdminHome = () => {
                     <FaClipboardList className="w-20 h-20 text-center text-yellow-700"/>
                     <div>
                         <h2 className="text-xl font-semibold mb-2">Total Orders</h2>
-                        <p className="text-xl">200</p>
+                        <p className="text-xl">{totalOrders}</p>
                     </div>
                 </div>
                 </Link>
@@ -83,6 +75,8 @@ const AdminHome = () => {
                 </div>
                 </Link>
                 </div>
+
+                )}
                 <div className="mt-6">
                     <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
                     <div className="overflow-x-auto">
@@ -108,7 +102,7 @@ const AdminHome = () => {
                                         #{order._id}
                                     </td>
                                     <td className="px-4 py-4">{order.user.name}</td>
-                                    <td className="px-4 py-4">#{order.price}</td>
+                                    <td className="px-4 py-4">#{order.price.toFixed(2)}</td>
                                     <td className={`px-4 py-4 ${order.status ? "text-green-500" : "text-yellow-500"}`}>{order.status ? "Delivered":"Processing"}</td>
                                     <td className="p-4 flex gap-6">
 

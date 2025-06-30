@@ -1,42 +1,47 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FaEdit, FaRegTrashAlt, FaAddressBook } from 'react-icons/fa';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import PageTitle from './Common/PageTitle';
 
 const UsersList = () => {
 
-    const users = [
-        {
-            name: "Jon Doe",
-            email: "JonDoe@gmail.com",
-            _id: "1",
-            role: "admin"
-        }, {
-            name: "Bernard Shaw",
-            email: "ben@gmail.com",
-            _id: "2",
-            role: "customer"
-        }, {
-            name: "Adam Smith",
-            email: "admasmith@gmail.com",
-            _id: "3",
-            role: "customer"
-        },
-
-]
-
 const navigate = useNavigate();
+const dispatch = useDispatch();
+const {users, loading, error} = useSelector((state)=> state.auth);
+
+
+useEffect(() =>{
+    if(user && user.role !== "admin"){
+        navigate("/")
+    }
+},[user, navigate])
+
+
+useEffect(() =>{
+    if(user && user.role === "admin"){
+        dispatch(fetchUsers());
+    }
+},[user, dispatch])
+
 
 const handleEditUser = (id) =>{
     navigate(`/admin/edituser/${id}`)
-    
-} 
+}
+
 
 const handleDeleteUser = (id) =>{   
 if(window.confirm("Are you sure you want to Delete this User?")){
-    console.log(`User, with ID: ${id} has been Deleted`)
+    dispatch(deleteUser(id))
+
+    }
 }
 
+if (loading){
+    return <p>Loading ...</p>
+}
+
+if (error){
+    return <p>Error {error}</p>
 }
     return (
         <div className="max-w-7xl mx-auto p-6">

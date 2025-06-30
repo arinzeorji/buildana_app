@@ -1,8 +1,9 @@
-import { createSlice, createAsuncThunk } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios";
 
 //RETRIEVE USER INFO AND TOKEN FROM localStorage if Available
-const userFromStorage = localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")) : null;
+const userFromStorage = localStorage.getItem("userInfo") ?
+    JSON.parse(localStorage.getItem("userInfo")) : null;
 
 //CHECK FOR EXISTING GUEST_ID OR GENERATE A NEW ONE
 const initialGuestId = localStorage.getItem("guestId") || `guest_${new Date().getTime()}`;
@@ -17,7 +18,7 @@ const initialState = {
 }
 
 //ASYNC THUNK FOR USER LOGIN
-export const loginUser = createAsuncThunk("auth/loginUser",
+export const loginUser = createAsyncThunk("auth/loginUser",
     async(userData, { rejectWithValue }) => {
         try {
             const response = await axios.post(
@@ -40,7 +41,7 @@ export const loginUser = createAsuncThunk("auth/loginUser",
 
 
 //ASYNC THUNK FOR USER REFISTER
-export const registerUser = createAsuncThunk("auth/registerUSer",
+export const registerUser = createAsyncThunk("auth/registerUSer",
     async(userData, { rejectWithValue }) => {
         try {
             const response = await axios.post(
@@ -60,9 +61,13 @@ export const registerUser = createAsuncThunk("auth/registerUSer",
 //AUTH SLICE
 const authSlice = createSlice({
     name: "auth",
-    initialState,
+    initialState: {
+        user: [],
+        loading: false,
+        error: null
+    },
     reducers: {
-        logout: (state) => {
+        logOut: (state) => {
             state.user = null;
             state.guestId = `guest_${new Date().getTime()}` //RESET GUEST_ID AFTER LOGOUT
             localStorage.removeItem("userInfo")
@@ -82,7 +87,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.user = action.payload;
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
@@ -94,7 +99,7 @@ const authSlice = createSlice({
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.user = action.payload;
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
@@ -103,6 +108,6 @@ const authSlice = createSlice({
     }
 })
 
-export const { logout, generateNewGuestId } = authSlice.actions
+export const { logOut, generateNewGuestId } = authSlice.actions
 
 export default authSlice.reducer;

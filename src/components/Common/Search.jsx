@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import { HiMagnifyingGlass, HiMiniXMark } from 'react-icons/hi2';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 const Search = () => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +17,9 @@ const Search = () => {
 
     const handleSearchSubmit = (e) =>{
         e.preventDefault();
-        console.log('search text ' + searchTerm);
+        dispatch(setFilters({search: searchTerm}))
+        dispatch(fetchProductsByFilters({search: searchTerm}))
+        navigate(`/collections/all?search=${searchTerm}`)
         setIsOpen(false);
     }
 

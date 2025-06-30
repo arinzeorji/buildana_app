@@ -1,20 +1,39 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import meta from '../../assets/meta.jfif'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate, useLocation} from 'react-router-dom'
+import {loginUser} from '../../redux/slice/authSlice';
+import {useDispatch, useSelector} from 'react-redux'
+
 const Login = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const {user, guestId} = useSelector((state)=> state.auth)
+    const {cart} = useSelector((state)=> state.cart)
+
+    //GET REDIRECT PARAMETER AND CHECK IF ITS CHECKOUT OR NOT
+    const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+    const isCheckoutRedirect = redirect.includes("checkout");
+
+    useEffect(() =>{
+        if(user){
+            if(cart.products.length > 0 && guestId){
+                dispatch(mergeCart({guestId, user}))
+                .then(()=>{
+                    navigate(isCheckoutRedirect ? "/checkout" : "/");
+                })
+            }else{
+                navigate(isCheckoutRedirect ? "/checkout" : "/");
+            }
+        }
+    }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch])
 
     const handleSubmit = (e) =>{
         e.preventDefault();
-
-        console.log(`
-            Login Details \n
-            Email: ${email} \n
-            Password: ${password} \n
-        `)
-        
+        dispatch(loginUser({email, password}));
     }
 
     return (
@@ -51,7 +70,8 @@ const Login = () => {
                     <button type="submit" className="mt-2 w-full bg-black text-white px-2 py-3 rounded-lg text-semibold hover:bg-gray-800 transition">Login</button>
                     <p className="mt-6 text-center text-sm">
                         Dont have an account? {" "}
-                        <Link to="/register" className="text-blue-500">Register</Link>
+                        <Link to={`register?redirect=${encodeURIComponent(redirect)}`}
+                        className="text-blue-500">Register</Link>
                     </p>
                 </form>
             

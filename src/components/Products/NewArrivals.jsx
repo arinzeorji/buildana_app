@@ -1,87 +1,26 @@
 import React, {useRef, useState, useEffect} from 'react'
 import {FiChevronLeft, FiChevronRight} from 'react-icons/fi'
 
-
-import phone1 from '../../assets/1.jpg'
-import phone2 from '../../assets/3.jpg'
-import phone3 from '../../assets/14.jpg'
-import phone4 from '../../assets/15.jpg'
-import laptop1 from '../../assets/13.jpg'
-import laptop2 from '../../assets/4.jpg'
-import laptop3 from '../../assets/6.jpg'
-import laptop4 from '../../assets/5.jpg'
 import { Link } from 'react-router';
-
-const newProducts = [
-    {
-        _id:1,
-        name: 'Samsung Galaxy',
-        price: 130,
-        image: {
-            imgUrl: phone1,
-            imgAlt: "Samusung Phone"
-        }
-    },{
-        _id:2,
-        name: 'HP Series',
-        price: 34130,
-        image: {
-            imgUrl: laptop3,
-            imgAlt: "HP Laptop"
-        }
-    },{
-        _id:3,
-        name: 'Mac Book',
-        price: 19930,
-        image: {
-            imgUrl: laptop4,
-            imgAlt: "Mac"
-        }
-    },{
-        _id:4,
-        name: 'Techno',
-        price: 3130,
-        image: {
-            imgUrl: phone4,
-            imgAlt: "Tecno"
-        }
-    },{
-        _id:5,
-        name: 'Nokia',
-        price: 30,
-        image: {
-            imgUrl: phone3,
-            imgAlt: "Samusung Phone"
-        }
-    },{
-        _id:6,
-        name: 'Dell',
-        price: 1130,
-        image: {
-            imgUrl: laptop2,
-            imgAlt: "Samusung Phone"
-        }
-    },{
-        _id:7,
-        name: 'HP',
-        price: 5130,
-        image: {
-            imgUrl: laptop1,
-            imgAlt: "Samusung Phone"
-        }
-    },{
-        _id:8,
-        name: 'Iphone XR',
-        price: 130,
-        image: {
-            imgUrl: phone2,
-            imgAlt: "Samusung Phone"
-        }
-    }
-]
+import axios from 'axios';
 
 const NewArrivals = () => {
 
+    const [newArrivals, setNewArrivals] = useState([])
+
+    useEffect(() =>{
+        const fetchNewArrivals = async () => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
+                );
+                setNewArrivals(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchNewArrivals();
+    })
     const scrollRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -130,12 +69,12 @@ const updateScrollButtons = () => {
         setCanScrollRight(rightScrollable);
     }
 
-    console.log({
-        scrolLeft:container.scrollLeft,
-        clientWidth:container.clientWidth,
-        containerScrollWidth: container.scrollWidth,
-        offSetLeft: scrollRef.current.offSetLeft
-    })
+    // console.log({
+    //     scrolLeft:container.scrollLeft,
+    //     clientWidth:container.clientWidth,
+    //     containerScrollWidth: container.scrollWidth,
+    //     offSetLeft: scrollRef.current.offSetLeft
+    // })
 }
 //end update scroll button function
     
@@ -148,7 +87,7 @@ const updateScrollButtons = () => {
             return () => container.removeEventListener("scroll", updateScrollButtons);
 
         }
-    }, [])
+    }, [newArrivals])
 
     return (
 
@@ -200,10 +139,10 @@ const updateScrollButtons = () => {
 
                 className={`container mx-auto overflow-x-scroll flex space-x-6 relative ${isDragging ? "cursor-grabbing": "cursor-grab"}`}>
                 {
-                    newProducts.map((product, index) => (
+                    newArrivals.map((product, index) => (
                         <div key={product._id} className="min-w-[100%] sm:min-w-[50%] lg:min-w-[30%] relative">
                             <img 
-                                src={product.image.imgUrl} 
+                                src={product.images.url} 
                                 draggable="false"
                                 className="w-full h-[300px] object-cover rounded-lg" alt={product.name} />
                             <div className="absolute bottom-0 left-0 right-0 bg-gray-900 w-[90%] hover:w-[100%] mx-auto text-white p-2 rounded-b-lg transition-all duration-300">

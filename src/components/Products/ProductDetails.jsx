@@ -1,74 +1,43 @@
 import React, {useState,useEffect} from 'react';
-import thumb1 from '../../assets/6.jpg'
-import thumb2 from '../../assets/7.jpg'
 import { toast } from 'sonner';
 import ProductsCollectionGrid from './ProductsCollectionGrid';
+import { useParams } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import {fetchProductDetails, fetchSimilarProducts} from "../../redux/slice/productSlice"
+import {addToCart} from "../../redux/slice/cartSlice"
 
-const selectedProducts = {
-    name: "Samsung Galazy s9",
-    price: 120000,
-    originalPrice:180000,
-    description: "Fairly used samsung s9 for quick to the fastest finger here",
-    brand: "Samsung",
-    type: "fairly used",
-    sizes:["S","M","L"],
-    colors:["Red","Black"],
-    images: [
-        {
-            url: thumb1,
-            altText: "Samsung phones"
-        },
-        {
-            url: thumb2,
-            altText: "Samsung phone 2"
-        },
-    ]
-}
+    const ProductDetails = ({productId}) => {
+        const {id} = useParams();
+        const dispatch = useDispatch();
+        const {selectedProduct, loading, error, similarProducts} = useSelector((state) => state.products);
+        const {user, guestId} = useSelector((state)=> state.auth);
 
-const similarProducts = [
-    {
-        _id: 1,
-        name: "Product 1",
-        price: 100000,
-        images: thumb1
-},
- {
-    _id: 2,
-    name: "Product 2",
-    price: 40000,
-    images: thumb2
-},
-{
-    _id: 3,
-    name: "Product 3",
-    price: 23000,
-    images: thumb1
-} ,
-{
-    _id: 4,
-    name: "Product 4",
-    price: 990000,
-    images: thumb2
-}
 
-]
-const ProductDetails = () => {
     const [mainImage, setMainImage] = useState("");
     const [selectedSize, setSelectedSize] = useState("");
     const [selectedColor, setSelectedColor] = useState("");
     const [quantity, setQuantity] = useState(1);
-    const [isButtonDisable, setIsButtonDisabled] = useState(false)
+    const [isButtonDisable, setIsButtonDisabled] = useState(false);
+
+    const productFetchId = productId || id; 
+
+    useEffect(()=>{
+        if(productFetchId){
+            dispatch(fetchProductDetails(productFetchId))
+            dispatch(fetchSimilarProducts({id: productFetchId}))
+        }
+    },[dispatch, productFetchId]);
 
     useEffect(() => {
-        if (selectedProducts.images.length > 0 ){
-            setMainImage(selectedProducts.images[0].url)
+        if (selectedProduct){
+            setMainImage(selectedProduct.images[0].url)
         }
-    }, [selectedProducts]);
+    }, [selectedProduct]);
 
     const handleQuantityChange = (action) =>{
         if(action === "+") setQuantity((prev) => prev + 1);
         if (action === "-" && quantity > 1) setQuantity((prev) => prev - 1);      
-    }
+    } 
 
     const handleAddToCart = () => {
         if (!selectedSize || !selectedColor){
@@ -80,23 +49,41 @@ const ProductDetails = () => {
 
         setIsButtonDisabled(true);
 
-        setTimeout(() => {
-            toast.success("Product Added to Cart",{
-                duration:1000
+        dispatch(
+            addToCart({
+                productId: productFetchId,
+                quantity,
+                size: selectedSize,
+                color:selectedColor,
+                guestId,
+                userId: user._id,
             })
+        ).then(() => {
+            toast.success("Product Added To Cart", {
+                duration: 1000,
+            })
+        }).finally(() => {
             setIsButtonDisabled(false);
-        }, 500)
+        })   
+    }
 
+    if (loading){
+        return <p> LOADING ....</p>
+    }
+
+    if (error){
+        return <p>{error}</p>
     }
     
     return (
         <div className="p-6">
+        { selectedProduct && (
             <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg">
                 <div className="flex flex-col md:flex-row">
                 {/* left thumbnails */}
                 <div className="hidden md:flex flex-col space-y-4 mr-6">
                     {
-                        selectedProducts.images.map((image, i) => (
+                        selectedProduct.images.map((image, i) => (
                             <img 
                                 onClick={ () => setMainImage(image.url)}
                                 key={i}
@@ -110,10 +97,7 @@ const ProductDetails = () => {
                 {/* main image */}
                 <div className="md:w-1/2">
                     <div className="mb-4">
-                        <img src={mainImage} 
-                             alt= "Main Products"
-                             className="w-full h-auto object-cover rounded-lg"
-                        />
+                        <img src={mainImage} alt= "Main Products" className="w-full h-auto object-cover rounded-lg"/>
                     </div>
 
                 </div>
@@ -121,7 +105,7 @@ const ProductDetails = () => {
                  {/* on mobile thumbnails */}
                  <div className="md:hidden flex overscroll-x-scroll space-x-4 mb-4">
                  {
-                        selectedProducts.images.map((image, i) => (
+                        selectedProduct.images.map((image, i) => (
                             <img 
 
                                 onClick={() => setMainImage(image.url)}
@@ -136,16 +120,16 @@ const ProductDetails = () => {
                  {/* right section */}
                  <div className="md:w-1/2 md:ml-10">
                     <h1 className="text-2xl md:text-3xl font-smeibold mb-2">
-                        {selectedProducts.name}
+                        {selectedProduct.name}
                     </h1>
                     <p className="text-lg text-gray-600 mb-1 line-through">
-                        #{selectedProducts.originalPrice && `${selectedProducts.originalPrice}`}
+                        #{selectedProduct.originalPrice && `${selectedProduct.originalPrice}`}
                     </p>     
                      <p className="text-xl text-gray-500 mb-2">
-                        #{selectedProducts.price}
+                        #{selectedProduct.price}
                     </p>
                     <p className="text-gray-600 mb-4">
-                    {selectedProducts.description}
+                    {selectedProduct.description}
                     </p>
 
                     <div className="flex m-2">
@@ -155,7 +139,7 @@ const ProductDetails = () => {
                                 Color:
                         </p>
                             <div className="flex gap-2 mt-2">
-                                {selectedProducts.colors.map((color) =>(
+                                {selectedProduct.colors.map((color) =>(
                                     <button key={color}
                                             onClick={() => setSelectedColor(color)}
                                             className={`w-8 h-8 rounded-full border ${selectedColor === color ? "border-gray-200 border-4": "border-gray-300"}`}
@@ -169,7 +153,7 @@ const ProductDetails = () => {
                             Size:
                         </p>
                         <div className="flex gap-2 mt-2">
-                            {selectedProducts.sizes.map((size) =>(
+                            {selectedProduct.sizes.map((size) =>(
                                 <button 
                                     key={size} 
                                     onClick={() => setSelectedSize(size)}
@@ -199,15 +183,15 @@ const ProductDetails = () => {
                                 <tbody>
                                 <tr>
                                         <td className="py-1 px-1 font-semibold">Brand: </td>
-                                        <td className="py-1 px-1">{selectedProducts.brand}</td>
+                                        <td className="py-1 px-1">{selectedProduct.brand}</td>
                                     </tr> 
                                     <tr>
                                         <td className="py-1 px-1 font-smeibold">Material: </td>
-                                        <td className="py-1 px-1">{selectedProducts.type}</td>
+                                        <td className="py-1 px-1">{selectedProduct.type}</td>
                                     </tr> 
                                     <tr>
                                         <td className="py-1 px-1 font-semibold">Brand</td>
-                                        <td className="py-1 px-1">{selectedProducts.description}</td>
+                                        <td className="py-1 px-1">{selectedProduct.description}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -228,12 +212,13 @@ const ProductDetails = () => {
             <div className="mt-20">
                 <h2 className="text-2xl text-center font-medium mb-4">You May Also Like</h2>
                             
-                <ProductsCollectionGrid products={similarProducts}/>
+                <ProductsCollectionGrid products={similarProducts} loading={loading} error={error}/>
             </div>     
 
 
 
         </div>
+        )}
         </div>
     )
 }

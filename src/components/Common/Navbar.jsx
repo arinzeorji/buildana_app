@@ -5,9 +5,18 @@ import Search from './Search';
 import CartDrawer from '../Layouts/CartDrawer';
 import { IoMdClose } from 'react-icons/io';
 import NavList from './NavList';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
 
+    const {cart} = useSelector((state)=> state.cart);
+    const {user} = useSelector((state)=> state.auth);
+
+
+    const cartItemCount = cart.products.reduce(
+        (total, product) => total + product.quantity,
+        0 || 0
+    )
     const [cartDrawerOpen, setCartDrawerOpen] = useState(false)
     const [navBarDrawerOpen, setNavBarDrawerOpen] = useState(false);
 
@@ -23,7 +32,9 @@ const Navbar = () => {
         <nav className="container mx-auto flex items-center justify-between py-4 px-6">
             {/* nav title */}
             <div>
-                <Link to="/" className="text-2xl font-medium">Buildana</Link>
+                <Link to="/" 
+                className="text-2xl font-medium">
+                Buildana</Link>
             </div>
 
             {/* nav menu */}
@@ -33,15 +44,23 @@ const Navbar = () => {
 
             {/* right icons */}
             <div className="flex items-center space-x-4">
-               <Link to="/admin" className="block bg-black text-white rounded text-sm p-2">Admin</Link>
+                {
+                    user && user.role === "admin" && (
+                        <Link to="/admin" className="block bg-black text-white rounded text-sm p-2">Admin</Link>
+                    )
+                }
+                
                 <Link to="/profile" className="hover:text-black">
                     <HiOutlineUser className=" h-6 w-6 text-gray-700" />
                 </Link>
                 <button onClick={togglerCartDrawer} className="relative hover:text-black">
                     <HiOutlineShoppingBag className="h-6 w-6 text-gray-700" />
-                    <span className="absolute -top-1 bg-[#ea2e0e] text-white text-xs rounded-full px-2 py-0 5">
-                        4
-                    </span>
+                    {cartItemCount > 0 && (
+                        <span className="absolute -top-1 bg-[#ea2e0e] text-white text-xs rounded-full px-2 py-0 5">
+                        {cartItemCount}
+                        </span>
+                    )}
+                    
                 </button>
                 {/* Search Icon */}
                 <div className="overflow-hidden mx-3">

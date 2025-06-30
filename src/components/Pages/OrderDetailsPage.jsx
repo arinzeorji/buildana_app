@@ -1,52 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {useParams, Link} from 'react-router-dom';
-import image1 from '../../assets/1.jpg';
-import image2 from '../../assets/4.jpg';
-import image3 from '../../assets/3.jpg';
+import { useDispatch, useSelector } from 'react-redux';
 
 const OrderDetailsPage = () => {
 
     const {id} = useParams();
-    const [orderDetails, setOrderDetails] = useState(null);
+    const dispatch = useDispatch();
+    const {orderDetails, loading, error} = useSelector((state)=>state.orders)
+
+    useEffect(()=>{
+        dispatch(fetchOrderDetails(id))
+    },[dispatch, id])
     
-    useEffect(() =>{
-        const mockOrderDetails = {
-            _id: id,
-            createdAt: new Date(),
-            isPaid: false,
-            isDelivered: false,
-            paymentMethod: "Paypal",
-            shippingMethod:"Standard",
-            shippingAddress: {
-                city: "Abuja",
-                country: "Nigeria",
-            },
-            orderItems: [
-                {
-                    productId: "1",
-                    name:"Jacket",
-                    price:120,
-                    quantity: 1,
-                    image: image1
-            }, 
-            {
-                productId: "2",
-                name:"Shoes",
-                price:69000,
-                quantity: 10,
-                image: image2
-        },  
-        {
-            productId: "3",
-            name:"Shirt",
-            price:20000,
-            quantity: 4,
-            image: image3
+    if (loading){
+        return <p>Loading</p>
     }
-        ]
-        }
-        setOrderDetails(mockOrderDetails);
-    }, [id])
+    if (error){
+        return <p>{error}</p>
+    }
     return (
         <div className="max-w-7xl mx-auto p-4 sm:p-6">
              <h2 className="text-2xl md:text-3xl font-bold mb-6">Order Details</h2>

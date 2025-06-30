@@ -1,24 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react'
-import phone1 from '../../assets/1.jpg'
-import phone2 from '../../assets/3.jpg'
-import phone3 from '../../assets/14.jpg'
-import phone4 from '../../assets/15.jpg'
-import laptop1 from '../../assets/13.jpg'
-import laptop2 from '../../assets/4.jpg'
-import laptop3 from '../../assets/6.jpg'
-import laptop4 from '../../assets/5.jpg'
-import { Link } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 
 import {FaFilter} from 'react-icons/fa'
 import FilterSidebar from '../Products/FilterSidebar';
 import SortOptions from '../Products/SortOptions';
 import ProductsCollectionGrid from '../Products/ProductsCollectionGrid';
-
+import { useDispatch, useSelector } from 'react-redux';
+import {fetchProductsByFilters} from "../../redux/slice/productSlice"
 const CollectionPage = () => {
 
-    const [products, setProducts] = useState([]);
+    const {collection} = useParams();
+    const [searchParams] = useSearchParams();
+    const dispatch = useDispatch()
+
+    const {products, loading, error} = useSelector((state)=> state.products);
+    
     const sidebarRef = useRef(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    useEffect(() =>{
+        dispatch(fetchProductsByFilters({collection, ...searchParams}))
+    }, [dispatch, collection, searchParams])
+
 
     const toggleSidebarOpen = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -41,57 +44,6 @@ const CollectionPage = () => {
        }
     }, []);
 
-
-    useEffect(() => {
-        setTimeout(() => {
-           const fetchedProducts = [
-                {
-                    _id:1,
-                    name: 'Samsung Galaxy',
-                    price: 130,
-                    images: phone1
-                },{
-                    _id:2,
-                    name: 'HP Series',
-                    price: 34130,
-                    images: laptop3
-                },{
-                    _id:3,
-                    name: 'Mac Book',
-                    price: 19930,
-                    images: laptop4
-                    
-                },{
-                    _id:4,
-                    name: 'Techno',
-                    price: 3130,
-                    images: phone4
-                },{
-                    _id:5,
-                    name: 'Nokia',
-                    price: 30,
-                    images: phone3
-                },{
-                    _id:6,
-                    name: 'Dell',
-                    price: 1130,
-                    images: laptop2
-                },{
-                    _id:7,
-                    name: 'HP',
-                    price: 5130,
-                    images: laptop1
-                },{
-                    _id:8,
-                    name: 'Iphone XR',
-                    price: 130,
-                    images:phone2
-                }
-            ]
-            setProducts(fetchedProducts);
-        }, 1000);
-
-    }, [])
     return (
         <div className="flex flex-col lg:flex-row">
             {/* mobile filter button */}
@@ -113,7 +65,7 @@ const CollectionPage = () => {
                 {/* sort options */}
                 <SortOptions />
 
-                <ProductsCollectionGrid products={products} />
+                <ProductsCollectionGrid products={products} loading={loading} error={error}/>
 
             </div>
         </div>
